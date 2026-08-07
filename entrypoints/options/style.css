@@ -1,0 +1,109 @@
+@import "../../src/ui/styles.css";
+
+html,
+body {
+  min-height: 0;
+  min-width: 0;
+  background: #fff;
+}
+
+.options-shell {
+  width: min(480px, 100%);
+  margin: 0 auto;
+  padding: 14px 16px 18px;
+}
+
+.options-group + .options-group {
+  margin-top: 18px;
+}
+
+.options-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 28px;
+  padding: 0 4px;
+}
+
+.options-group-header h1,
+.options-group-header h2 {
+  margin: 0;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 20px;
+  letter-spacing: -0.2px;
+}
+
+.options-list {
+  border-block: 1px solid #e8e8e8;
+}
+
+.command-row,
+.adapter-row {
+  display: flex;
+  width: 100%;
+  min-height: 48px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 0 4px;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+}
+
+.command-row {
+  cursor: pointer;
+  text-align: left;
+  transition: background 140ms ease;
+}
+
+.command-row:hover {
+  background: #f6f6f6;
+}
+
+.command-row + .command-row {
+  border-top: 1px solid #ededed;
+}
+
+.command-name {
+  font-weight: 520;
+}
+
+.command-trailing {
+  display: inline-flex;
+  align-items: center;
+}
+
+.command-trailing {
+  flex: 0 0 auto;
+  gap: 7px;
+  color: #aaa;
+}
+
+.adapter-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  color: #356ac3;
+  font-size: 11px;
+}
+
+.command-row:focus-visible {
+  outline: 2px solid #0070f3;
+  outline-offset: 2px;
+}
+
+@media (max-width: 320px) {
+  .options-shell {
+    padding-inline: 10px;
+  }
+
+  .command-row {
+    gap: 8px;
+  }
+
+  .command-trailing > svg {
+    display: none;
+  }
+}

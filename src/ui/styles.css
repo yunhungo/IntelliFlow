@@ -1,0 +1,145 @@
+@import "tailwindcss";
+
+:root {
+  color: #171717;
+  background: #fafafa;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 340px;
+  min-height: 100vh;
+  background: #fafafa;
+  color: #171717;
+}
+
+button,
+input,
+select {
+  font: inherit;
+}
+
+button {
+  color: inherit;
+}
+
+.if-brand-mark {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  place-items: center;
+  border-radius: 10px;
+  background: #171717;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: -0.35px;
+  box-shadow:
+    0 1px 1px rgb(0 0 0 / 5%),
+    0 2px 2px rgb(0 0 0 / 10%),
+    inset 0 0 0 1px rgb(255 255 255 / 12%);
+}
+
+.if-eyebrow {
+  margin: 0;
+  color: #888;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  line-height: 16px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.if-card {
+  border: 0;
+  border-radius: 12px;
+  background: #fff;
+  box-shadow:
+    0 1px 1px rgb(0 0 0 / 5%),
+    0 8px 16px -8px rgb(0 0 0 / 10%),
+    inset 0 0 0 1px rgb(0 0 0 / 8%);
+}
+
+.if-button-primary,
+.if-button-secondary {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border-radius: 999px;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 20px;
+  transition:
+    transform 150ms ease,
+    background 150ms ease,
+    box-shadow 150ms ease;
+}
+
+.if-button-primary {
+  border: 1px solid #171717;
+  background: #171717;
+  color: #fff;
+}
+
+.if-button-secondary {
+  border: 1px solid #ebebeb;
+  background: #fff;
+  color: #171717;
+}
+
+.if-button-primary:hover,
+.if-button-secondary:hover {
+  transform: translateY(-1px);
+}
+
+.if-button-primary:focus-visible,
+.if-button-secondary:focus-visible,
+.if-option:focus-visible {
+  outline: 2px solid #0070f3;
+  outline-offset: 2px;
+}
+
+.if-kbd {
+  display: inline-flex;
+  min-width: 24px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 999px;
+  background: #f1f1f1;
+  color: #737373;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 10px;
+  line-height: 1;
+  box-shadow: none;
+}
+
+.if-kbd--shortcut {
+  min-width: 0;
+  height: 22px;
+  padding: 0 8px;
+  letter-spacing: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto;
+    transition-duration: 0.01ms;
+    animation-duration: 0.01ms;
+    animation-iteration-count: 1;
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "enabled": false,
+  "base_url": "https://cloud.langfuse.com",
+  "environment": "development",
+  "tags": ["codex", "intelliflow"],
+  "metadata": {
+    "application": "intelliflow",
+    "tracing_scope": "codex-agent-workflow"
+  },
+  "max_chars": 12000
+}

@@ -1,0 +1,20 @@
+# Dependencies and build output
+/node_modules/
+/.wxt/
+/.output/
+/dist/
+/coverage/
+
+# Local configuration
+.env
+.env.*
+!.env.example
+/.codex/langfuse.json
+!/.codex/langfuse.example.json
+
+# Local tooling
+/.codegraph/
+.DS_Store
+.idea/
+.vscode/
+*.log
