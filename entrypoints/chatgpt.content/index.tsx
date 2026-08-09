@@ -34,7 +34,7 @@ export default defineContentScript({
       isolateEvents: true,
       onMount(container) {
         const app = document.createElement('div');
-        app.dataset.intelliflowBuild = '0.1.0-20260807.3';
+        app.dataset.intelliflowBuild = '0.1.0-20260809.1';
         container.append(app);
         const root = createRoot(app);
         root.render(

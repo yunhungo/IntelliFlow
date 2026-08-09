@@ -48,7 +48,11 @@ export class SwitchCoordinator {
         const message =
           error instanceof Error ? error.message : 'IntelliFlow could not switch state.';
         if (error instanceof AdapterError && error.code === 'target-unavailable') {
-          const modelName = await this.adapter.readCurrent('model').catch(() => '当前模型');
+          const modelName =
+            this.stateCache.getUnavailableReasoningModel() ??
+            this.stateCache.get('model')?.current ??
+            (await this.adapter.readCurrent('model').catch(() => '当前模型'));
+          this.stateCache.markReasoningUnavailable(modelName);
           this.overlay.showUnavailable(modelName);
         } else {
           this.overlay.showError(message);
@@ -70,17 +74,17 @@ export class SwitchCoordinator {
   }
 
   private async readState(): Promise<SiteState> {
-    let model = this.stateCache.get('model');
-    if (model != null) {
-      const currentModel = await this.adapter.readCurrent('model');
-      this.stateCache.confirmModel(currentModel);
-      model = this.stateCache.get('model');
-    }
-    model ??= await this.readSnapshot('model');
-    const reasoning = await this.readSnapshot('reasoning').catch((error: unknown) => {
-      if (error instanceof AdapterError && error.code === 'target-unavailable') return undefined;
-      throw error;
-    });
+    const model = await this.readSnapshot('model');
+    const reasoning =
+      this.stateCache.getUnavailableReasoningModel() == null
+        ? await this.readSnapshot('reasoning').catch((error: unknown) => {
+            if (error instanceof AdapterError && error.code === 'target-unavailable') {
+              this.stateCache.markReasoningUnavailable(model.current);
+              return undefined;
+            }
+            throw error;
+          })
+        : undefined;
     return {
       siteId: this.adapter.id,
       siteName: this.adapter.name,

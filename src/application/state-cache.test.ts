@@ -57,6 +57,27 @@ describe('SwitchStateCache', () => {
     expect(cache.get('model')).toBeUndefined();
     expect(cache.get('reasoning')).toBeUndefined();
   });
+
+  it('caches an unavailable reasoning capability until the model changes', () => {
+    const cache = new SwitchStateCache();
+    cache.markReasoningUnavailable('o3');
+
+    expect(cache.getUnavailableReasoningModel()).toBe('o3');
+
+    cache.set(result('model', 'GPT-5.6 Sol', true));
+
+    expect(cache.getUnavailableReasoningModel()).toBeUndefined();
+  });
+
+  it('clears an unavailable capability after reasoning options are observed', () => {
+    const cache = new SwitchStateCache();
+    cache.markReasoningUnavailable('o3');
+
+    cache.set(snapshot('reasoning', 'High'));
+
+    expect(cache.getUnavailableReasoningModel()).toBeUndefined();
+    expect(cache.get('reasoning')?.current).toBe('High');
+  });
 });
 
 function snapshot(target: SwitchTarget, current: string): SwitchSnapshot {

@@ -3,6 +3,7 @@ import type { SiteAdapter } from '../adapters/site-adapter';
 import { AdapterError } from '../adapters/site-adapter';
 import type { SwitchResult, SwitchSnapshot, SwitchTarget } from '../domain/switching';
 import { ShortcutSessionCoordinator } from './shortcut-session';
+import { SwitchStateCache } from './state-cache';
 import type { OverlayPort } from './switch-coordinator';
 
 describe('ShortcutSessionCoordinator', () => {
@@ -106,7 +107,7 @@ describe('ShortcutSessionCoordinator', () => {
     expect(overlay.hide).toHaveBeenCalled();
   });
 
-  it('reloads reasoning options when the native model changed', async () => {
+  it('reuses reasoning without rereading the model until IntelliFlow changes it', async () => {
     const readCurrent = vi
       .fn<(target: SwitchTarget) => Promise<string>>()
       .mockResolvedValueOnce('GPT-5.6 Sol')
@@ -125,7 +126,8 @@ describe('ShortcutSessionCoordinator', () => {
       select: vi.fn(async (target, optionId) => result(target, optionId)),
     };
     const overlay = fakeOverlay();
-    const coordinator = new ShortcutSessionCoordinator(adapter, overlay);
+    const cache = new SwitchStateCache();
+    const coordinator = new ShortcutSessionCoordinator(adapter, overlay, cache);
 
     coordinator.advance('reasoning');
     await vi.waitFor(() => expect(overlay.showPreview).toHaveBeenCalledTimes(1));
@@ -133,7 +135,16 @@ describe('ShortcutSessionCoordinator', () => {
 
     coordinator.advance('reasoning');
     await vi.waitFor(() => expect(overlay.showPreview).toHaveBeenCalledTimes(2));
+    coordinator.cancel();
 
+    expect(readCurrent).toHaveBeenCalledOnce();
+    expect(observe).toHaveBeenCalledOnce();
+
+    cache.set(result('model', 'beta'));
+    coordinator.advance('reasoning');
+    await vi.waitFor(() => expect(overlay.showPreview).toHaveBeenCalledTimes(3));
+
+    expect(readCurrent).toHaveBeenCalledTimes(2);
     expect(observe).toHaveBeenCalledTimes(2);
     expect(lastPreview(overlay).options).toHaveLength(1);
     expect(lastPreview(overlay).current).toBe('Only');
@@ -154,6 +165,14 @@ describe('ShortcutSessionCoordinator', () => {
     expect(overlay.showPreview).not.toHaveBeenCalled();
     expect(overlay.showError).not.toHaveBeenCalled();
     expect(overlay.hide).toHaveBeenCalledOnce();
+
+    vi.mocked(overlay.hide).mockClear();
+    coordinator.cancel();
+    coordinator.advance('reasoning');
+
+    await vi.waitFor(() => expect(overlay.showUnavailable).toHaveBeenCalledTimes(2));
+    expect(adapter.readCurrent).toHaveBeenCalledOnce();
+    expect(adapter.observe).toHaveBeenCalledOnce();
 
     vi.mocked(overlay.hide).mockClear();
     coordinator.release();

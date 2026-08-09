@@ -9,6 +9,7 @@ export class SwitchStateCache {
   private readonly entries = new Map<SwitchTarget, CacheEntry>();
   private modelIdentity: string | undefined;
   private reasoningModelIdentity: string | undefined;
+  private unavailableReasoningModelIdentity: string | undefined;
 
   constructor(
     private readonly modelTtlMs = 30_000,
@@ -55,6 +56,19 @@ export class SwitchStateCache {
 
     this.entries.set('reasoning', { snapshot });
     this.reasoningModelIdentity = this.modelIdentity;
+    this.unavailableReasoningModelIdentity = undefined;
+  }
+
+  getUnavailableReasoningModel(): string | undefined {
+    if (!sameIdentity(this.unavailableReasoningModelIdentity, this.modelIdentity)) return undefined;
+    return this.unavailableReasoningModelIdentity;
+  }
+
+  markReasoningUnavailable(modelName: string): void {
+    this.confirmModel(modelName);
+    this.entries.delete('reasoning');
+    this.reasoningModelIdentity = undefined;
+    this.unavailableReasoningModelIdentity = modelName;
   }
 
   confirmModel(current: string): void {
@@ -68,6 +82,7 @@ export class SwitchStateCache {
   private invalidateReasoning(): void {
     this.entries.delete('reasoning');
     this.reasoningModelIdentity = undefined;
+    this.unavailableReasoningModelIdentity = undefined;
   }
 }
 

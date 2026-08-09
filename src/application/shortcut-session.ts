@@ -109,13 +109,25 @@ export class ShortcutSessionCoordinator {
     let currentModel: string | undefined;
     try {
       if (session.target === 'reasoning') {
+        const cached = this.stateCache.get('reasoning');
+        if (cached != null) {
+          this.attachSnapshot(session, cached);
+          return;
+        }
+
+        const unavailableModel = this.stateCache.getUnavailableReasoningModel();
+        if (unavailableModel != null) {
+          this.attachUnavailable(session, unavailableModel);
+          return;
+        }
+
         currentModel = await this.adapter.readCurrent('model');
         if (this.active?.id !== session.id) return;
         this.stateCache.confirmModel(currentModel);
 
-        const cached = this.stateCache.get('reasoning');
-        if (cached != null) {
-          this.attachSnapshot(session, cached);
+        const confirmedCached = this.stateCache.get('reasoning');
+        if (confirmedCached != null) {
+          this.attachSnapshot(session, confirmedCached);
           return;
         }
       }
@@ -132,8 +144,9 @@ export class ShortcutSessionCoordinator {
           this.overlay.hide();
           return;
         }
-        session.unavailable = true;
-        this.overlay.showUnavailable(currentModel ?? '当前模型', false);
+        const unavailableModel = currentModel ?? '当前模型';
+        this.stateCache.markReasoningUnavailable(unavailableModel);
+        this.attachUnavailable(session, unavailableModel);
         return;
       }
       this.active = undefined;
@@ -143,6 +156,12 @@ export class ShortcutSessionCoordinator {
         );
       }
     }
+  }
+
+  private attachUnavailable(session: ShortcutSession, modelName: string): void {
+    if (this.active?.id !== session.id) return;
+    session.unavailable = true;
+    this.overlay.showUnavailable(modelName, false);
   }
 
   private attachSnapshot(session: ShortcutSession, snapshot: SwitchSnapshot): void {
